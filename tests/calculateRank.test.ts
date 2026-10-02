@@ -1,5 +1,5 @@
-import { describe, expect, it } from "@jest/globals";
-import "@testing-library/jest-dom";
+import { describe, expect, it } from "vitest";
+import "@testing-library/jest-dom/vitest";
 import { calculateRank } from "../src/calculateRank.ts";
 
 describe("Test calculateRank", () => {

@@ -1,6 +1,6 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "vitest";
 import { queryByTestId } from "@testing-library/dom";
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/vitest";
 import { cssToObject } from "@uppercod/css-to-object";
 import { Card } from "../src/cards/card.ts";
 import { icons } from "../src/common/icons.ts";

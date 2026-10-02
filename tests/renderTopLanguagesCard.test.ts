@@ -1,6 +1,6 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "vitest";
 import { queryAllByTestId, queryByTestId } from "@testing-library/dom";
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/vitest";
 import { cssToObject } from "@uppercod/css-to-object";
 import {
   MIN_CARD_WIDTH,

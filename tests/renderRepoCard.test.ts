@@ -1,6 +1,6 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "vitest";
 import { queryByTestId } from "@testing-library/dom";
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/vitest";
 import { cssToObject } from "@uppercod/css-to-object";
 import { renderRepoCard } from "../src/cards/repo.ts";
 import { themes } from "../themes/index.ts";

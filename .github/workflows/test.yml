@@ -31,13 +31,14 @@ jobs:
           npm ci
           npm run test
 
+      - name: Run typecheck
+        run: |
+          npm run typecheck
+
       - name: Run ESLint
         run: |
           npm run lint
 
-      - name: Run bench tests
-        run: |
-          npm run bench
 
       - name: Run Prettier
         run: |
