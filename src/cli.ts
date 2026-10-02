@@ -21,22 +21,19 @@ interface Options {
 }
 
 /**
- * Read a setting from the environment, falling back to a local override.
+ * Read a setting, preferring the name GitHub Actions uses.
  *
- * GitHub Actions passes `with:` values as `INPUT_*` variables, and every
- * setting is also settable from the command line so the CLI can be run and
- * debugged outside a workflow.
+ * Actions passes `with:` values as `INPUT_*`. A `GH_CARD_*` prefix is also
+ * accepted so the CLI can be run outside a workflow. The prefix is required
+ * rather than a bare uppercase name: an unprefixed `PATH` would otherwise pick
+ * up the shell's search path and send the card to a system directory.
  *
  * @param name The setting name, as it appears in action.yml.
- * @param fallback Value to use when neither source provides one.
- * @returns The resolved value.
+ * @returns The resolved value, or an empty string when it is unset.
  */
-const setting = (name: string, fallback = ""): string => {
-  const fromEnv = process.env[`INPUT_${name.toUpperCase().replace(/-/g, "_")}`];
-  if (fromEnv !== undefined && fromEnv !== "") {
-    return fromEnv;
-  }
-  return process.env[`${name.toUpperCase().replace(/-/g, "_")}`] ?? fallback;
+const setting = (name: string): string => {
+  const key = name.toUpperCase().replace(/-/g, "_");
+  return process.env[`INPUT_${key}`] || process.env[`GH_CARD_${key}`] || "";
 };
 
 /**
