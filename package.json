@@ -22,15 +22,13 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
     "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "test:update:snapshot": "node --experimental-vm-modules node_modules/jest/bin/jest.js -u",
-    "test:e2e": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.e2e.config.js",
-    "theme-readme-gen": "node scripts/generate-theme-doc",
-    "generate-langs-json": "node scripts/generate-langs-json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint --max-warnings 0 src tests themes scripts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit",
-    "prepare": "husky",
-    "lint": "npx eslint --max-warnings 0 \"./src/**/*.{js,ts}\" \"./scripts/**/*.js\" \"./tests/**/*.js\" \"./api/**/*.js\" \"./themes/**/*.js\"",
-    "bench": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config jest.bench.config.js"
+    "theme-readme-gen": "node scripts/generate-theme-doc",
+    "generate-langs-json": "node scripts/generate-langs-json",
+    "prepare": "husky"
   },
   "license": "MIT",
   "author": {

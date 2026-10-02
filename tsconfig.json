@@ -1,28 +1,25 @@
 {
   "compilerOptions": {
     "target": "es2023",
-    "lib": ["es2023"],
+    "lib": ["es2023", "dom"],
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "moduleDetection": "force",
     "types": ["node"],
-
-    "allowJs": true,
-    "checkJs": false,
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
     "noEmit": true,
-
     "strict": true,
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "forceConsistentCasingInFileNames": true,
-
-    "isolatedModules": true,
-    "verbatimModuleSyntax": true,
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts", "types/**/*.d.ts"],
-  "exclude": ["node_modules", "tests", "api", "scripts"]
+  "include": ["src/**/*.ts", "types/**/*.d.ts", "action.yml"],
+  "exclude": ["node_modules", "tests"]
 }

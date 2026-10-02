@@ -1,5 +1,5 @@
 import wrap from "word-wrap";
-import { encodeHTML } from "./html.js";
+import { encodeHTML } from "./html.ts";
 
 /**
  * Retrieves num with suffix k(thousands) precise to given decimal places.

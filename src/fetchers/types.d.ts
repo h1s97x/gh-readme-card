@@ -42,7 +42,10 @@ export type StatsData = {
 export type Lang = {
   name: string;
   color: string;
+  /** Weighted size, used for ranking. */
   size: number;
+  /** How many repositories the language appears in. */
+  count: number;
 };
 
 export type TopLangData = Record<string, Lang>;

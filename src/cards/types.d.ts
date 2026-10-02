@@ -1,4 +1,7 @@
-type ThemeNames = keyof typeof import("../../themes/index.js");
+type ThemeNames = keyof typeof import("../../themes/index.ts");
+
+/** Card layouts the languages card can be rendered in. */
+export type Layout = "compact" | "normal" | "donut" | "donut-vertical" | "pie";
 type RankIcon = "default" | "github" | "percentile";
 
 export type CommonOptions = {
@@ -41,7 +44,7 @@ export type TopLangOptions = CommonOptions & {
   hide_title: boolean;
   card_width: number;
   hide: string[];
-  layout: "compact" | "normal" | "donut" | "donut-vertical" | "pie";
+  layout: Layout;
   custom_title: string;
   langs_count: number;
   disable_animations: boolean;
@@ -56,7 +59,7 @@ export type WakaTimeOptions = CommonOptions & {
   line_height: string;
   hide_progress: boolean;
   custom_title: string;
-  layout: "compact" | "normal";
+  layout?: Layout;
   langs_count: number;
   display_format: "time" | "percent";
   disable_animations: boolean;
