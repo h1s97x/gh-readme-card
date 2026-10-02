@@ -4,9 +4,9 @@ const TRY_AGAIN_LATER = "Please try again later";
 /** Recognised error types, mapped to the secondary line shown on a card. */
 const SECONDARY_ERROR_MESSAGES = {
   MAX_RETRY:
-    "You can deploy own instance or wait until public will be no longer limited",
+    "GitHub's API rate limit was reached. Try again later, or use more than one token.",
   NO_TOKENS:
-    "Please add an env variable called PAT_1 with your GitHub API token in vercel",
+    "No token found. Set PAT_1 in the action's environment, or pass one as the token input.",
   USER_NOT_FOUND: "Make sure the provided username is not an organization",
   GRAPHQL_ERROR: TRY_AGAIN_LATER,
   GITHUB_REST_API_ERROR: TRY_AGAIN_LATER,
