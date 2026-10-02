@@ -1,15 +1,15 @@
 // @ts-check
 
 import { CustomError } from "./error.js";
+import { getConfig } from "./config.js";
 import { logger } from "./log.js";
 
 // Script variables.
 
-// Count the number of GitHub API tokens available.
-const PATs = Object.keys(process.env).filter((key) =>
-  /PAT_\d*$/.exec(key),
-).length;
-const RETRIES = process.env.NODE_ENV === "test" ? 7 : PATs;
+// How many tokens to rotate through before giving up. Tests get a fixed
+// budget so they can simulate a rate limit without PAT_1..PAT_7 in the env.
+const RETRIES =
+  process.env.NODE_ENV === "test" ? 7 : getConfig().pats.length;
 
 /**
  * @typedef {import("axios").AxiosResponse} AxiosResponse Axios response.
@@ -40,8 +40,7 @@ const retryer = async (fetcher, variables, retries = 0) => {
     // try to fetch with the first token since RETRIES is 0 index i'm adding +1
     let response = await fetcher(
       variables,
-      // @ts-ignore
-      process.env[`PAT_${retries + 1}`],
+      getConfig().pats[retries]?.value ?? "",
       // used in tests for faking rate limit
       retries,
     );

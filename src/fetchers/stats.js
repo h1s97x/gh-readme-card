@@ -6,7 +6,7 @@ import githubUsernameRegex from "github-username-regex";
 import { calculateRank } from "../calculateRank.js";
 import { retryer } from "../common/retryer.js";
 import { logger } from "../common/log.js";
-import { excludeRepositories } from "../common/envs.js";
+import { getConfig } from "../common/config.js";
 import { CustomError, MissingParamError } from "../common/error.js";
 import { wrapTextMultiline } from "../common/fmt.js";
 import { request } from "../common/http.js";
@@ -311,7 +311,7 @@ const fetchStats = async (
   stats.contributedTo = user.repositoriesContributedTo.totalCount;
 
   // Retrieve stars while filtering out repositories to be hidden.
-  const allExcludedRepos = [...exclude_repo, ...excludeRepositories];
+  const allExcludedRepos = [...exclude_repo, ...getConfig().excludeRepositories];
   let repoToHide = new Set(allExcludedRepos);
 
   stats.totalStars = user.repositories.nodes
