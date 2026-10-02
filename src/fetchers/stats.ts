@@ -1,5 +1,3 @@
-import axios from "axios";
-import * as dotenv from "dotenv";
 import githubUsernameRegex from "github-username-regex";
 import { calculateRank } from "../calculateRank.ts";
 import { retryer } from "../common/retryer.ts";
@@ -7,8 +5,9 @@ import { logger } from "../common/log.ts";
 import { getConfig } from "../common/config.ts";
 import { CustomError, MissingParamError } from "../common/error.ts";
 import { wrapTextMultiline } from "../common/fmt.ts";
-import { request } from "../common/http.ts";
+import { request, USER_AGENT } from "../common/http.ts";
 import type { StatsData } from "./types.ts";
+import type { GitHubResponse } from "../common/http.ts";
 
 /** Variables the two GraphQL queries take. */
 interface StatsVariables {
@@ -59,8 +58,6 @@ interface StatsResponse {
   data: StatsQueryResult;
   statusText?: string;
 }
-
-dotenv.config();
 
 // GraphQL queries.
 const GRAPHQL_REPOS_FIELD = `
@@ -132,7 +129,7 @@ const GRAPHQL_STATS_QUERY = `
  *
  * @param variables Fetcher variables.
  * @param token GitHub token.
- * @returns Axios response.
+ * @returns The search response.
  */
 const fetcher = (
   variables: StatsVariables,
@@ -159,7 +156,7 @@ const fetcher = (
  * @param {boolean} variables.includeDiscussions Include discussions.
  * @param {boolean} variables.includeDiscussionsAnswers Include discussions answers.
  * @param {string|undefined} variables.startTime Time to start the count of total commits.
- * @returns {Promise<import('axios').AxiosResponse>} Axios response.
+ * @returns The response.
  *
  * @description This function supports multi-page fetching if the 'FETCH_MULTI_PAGE_STARS' environment variable is set to true.
  */
@@ -230,23 +227,31 @@ const statsFetcher = async ({
  *
  * @param variables Fetcher variables.
  * @param token GitHub token.
- * @returns Axios response.
+ * @returns The search response.
  *
  * @see https://developer.github.com/v3/search/#search-commits
  */
-const fetchTotalCommits = (
+const fetchTotalCommits = async (
   variables: { login: string },
   token: string,
-): Promise<{ data: { total_count: number } }> => {
-  return axios({
-    method: "get",
-    url: `https://api.github.com/search/commits?q=author:${variables.login}`,
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/vnd.github.cloak-preview",
-      Authorization: `token ${token}`,
+): Promise<GitHubResponse<{ total_count: number }>> => {
+  const response = await fetch(
+    `https://api.github.com/search/commits?q=author:${variables.login}`,
+    {
+      headers: {
+        Accept: "application/vnd.github.cloak-preview",
+        "User-Agent": USER_AGENT,
+        Authorization: `token ${token}`,
+      },
     },
-  });
+  );
+
+  const body = (await response.json()) as { total_count: number };
+  return {
+    data: body,
+    status: response.status,
+    statusText: response.statusText,
+  };
 };
 
 /**

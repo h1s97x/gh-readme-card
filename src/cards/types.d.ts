@@ -1,4 +1,4 @@
-type ThemeNames = keyof typeof import("../../themes/index.ts");
+export type ThemeNames = keyof typeof import("../../themes/index.ts");
 
 /** Card layouts the languages card can be rendered in. */
 export type Layout = "compact" | "normal" | "donut" | "donut-vertical" | "pie";

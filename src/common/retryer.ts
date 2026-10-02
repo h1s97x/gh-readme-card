@@ -1,5 +1,6 @@
 import { CustomError } from "./error.ts";
 import { getConfig } from "./config.ts";
+import { RequestError } from "./http.ts";
 import { logger } from "./log.ts";
 
 // Script variables.
@@ -18,13 +19,6 @@ type GitHubResponse = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 };
-
-/** An axios-shaped rejection: the request reached GitHub and was refused. */
-interface RequestError {
-  response?: {
-    data?: { message?: string };
-  };
-}
 
 /** Performs one API call with a single token. */
 type FetcherFunction<
@@ -118,5 +112,5 @@ const retryer = async <TResponse extends GitHubResponse, TVariables = unknown>(
 };
 
 export { retryer, RETRIES };
-export type { FetcherFunction, GitHubResponse, RequestError };
+export type { FetcherFunction, GitHubResponse };
 export default retryer;

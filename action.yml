@@ -1,0 +1,29 @@
+name: "gh-readme-card"
+description: "Generate SVG stats cards for your GitHub profile README"
+author: "h1s97x"
+
+branding:
+  icon: "bar-chart-2"
+  color: "blue"
+
+inputs:
+  card:
+    description: "Which card to render: user, repo or langs"
+    required: true
+  params:
+    description:
+      "Card options as a query string, e.g. username=octocat&show_icons=true"
+    required: false
+    default: ""
+  path:
+    description: "Where to write the SVG, relative to the workspace"
+    required: true
+  token:
+    description:
+      "GitHub token for the API call. Defaults to the token GitHub provides."
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: "node24"
+  main: "src/cli.ts"

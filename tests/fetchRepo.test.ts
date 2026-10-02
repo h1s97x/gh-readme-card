@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
+import { mockFetch } from "./fetch-mock.ts";
 import "@testing-library/jest-dom/vitest";
-import axios from "axios";
-import MockAdapter from "axios-mock-adapter";
 import { fetchRepo } from "../src/fetchers/repo.ts";
 
 const data_repo = {
@@ -32,7 +31,7 @@ const data_org = {
   },
 };
 
-const mock = new MockAdapter(axios);
+const mock = mockFetch();
 
 afterEach(() => {
   mock.reset();
@@ -40,7 +39,7 @@ afterEach(() => {
 
 describe("Test fetchRepo", () => {
   it("should fetch correct user repo", async () => {
-    mock.onPost("https://api.github.com/graphql").reply(200, data_user);
+    mock.onPost("https://api.github.com/graphql", data_user);
 
     let repo = await fetchRepo("anuraghazra", "convoychat");
 
@@ -51,7 +50,7 @@ describe("Test fetchRepo", () => {
   });
 
   it("should fetch correct org repo", async () => {
-    mock.onPost("https://api.github.com/graphql").reply(200, data_org);
+    mock.onPost("https://api.github.com/graphql", data_org);
 
     let repo = await fetchRepo("anuraghazra", "convoychat");
     expect(repo).toStrictEqual({
@@ -61,9 +60,9 @@ describe("Test fetchRepo", () => {
   });
 
   it("should throw error if user is found but repo is null", async () => {
-    mock
-      .onPost("https://api.github.com/graphql")
-      .reply(200, { data: { user: { repository: null }, organization: null } });
+    mock.onPost("https://api.github.com/graphql", {
+      data: { user: { repository: null }, organization: null },
+    });
 
     await expect(fetchRepo("anuraghazra", "convoychat")).rejects.toThrow(
       "User Repository Not found",
@@ -71,9 +70,9 @@ describe("Test fetchRepo", () => {
   });
 
   it("should throw error if org is found but repo is null", async () => {
-    mock
-      .onPost("https://api.github.com/graphql")
-      .reply(200, { data: { user: null, organization: { repository: null } } });
+    mock.onPost("https://api.github.com/graphql", {
+      data: { user: null, organization: { repository: null } },
+    });
 
     await expect(fetchRepo("anuraghazra", "convoychat")).rejects.toThrow(
       "Organization Repository Not found",
@@ -81,9 +80,9 @@ describe("Test fetchRepo", () => {
   });
 
   it("should throw error if both user & org data not found", async () => {
-    mock
-      .onPost("https://api.github.com/graphql")
-      .reply(200, { data: { user: null, organization: null } });
+    mock.onPost("https://api.github.com/graphql", {
+      data: { user: null, organization: null },
+    });
 
     await expect(fetchRepo("anuraghazra", "convoychat")).rejects.toThrow(
       "Not found",
@@ -91,7 +90,7 @@ describe("Test fetchRepo", () => {
   });
 
   it("should throw error if repository is private", async () => {
-    mock.onPost("https://api.github.com/graphql").reply(200, {
+    mock.onPost("https://api.github.com/graphql", {
       data: {
         user: { repository: { ...data_repo, isPrivate: true } },
         organization: null,

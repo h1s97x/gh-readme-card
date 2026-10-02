@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { mockFetch } from "./fetch-mock.ts";
 import "@testing-library/jest-dom/vitest";
-import axios from "axios";
-import MockAdapter from "axios-mock-adapter";
 import { calculateRank } from "../src/calculateRank.ts";
 import { fetchStats } from "../src/fetchers/stats.ts";
 
@@ -101,24 +100,18 @@ const error = {
   ],
 };
 
-const mock = new MockAdapter(axios);
+const mock = mockFetch();
 
 beforeEach(() => {
   process.env.FETCH_MULTI_PAGE_STARS = "false"; // Set to `false` to fetch only one page of stars.
-  mock.onPost("https://api.github.com/graphql").reply((cfg) => {
-    let req = JSON.parse(cfg.data);
-
-    if (
-      req.variables &&
-      req.variables.startTime &&
-      req.variables.startTime.startsWith("2003")
-    ) {
-      return [200, data_year2003];
+  mock.onPost("https://api.github.com/graphql", (_url, req) => {
+    const startTime = req?.variables?.startTime;
+    if (typeof startTime === "string" && startTime.startsWith("2003")) {
+      return data_year2003;
     }
-    return [
-      200,
-      req.query.includes("totalCommitContributions") ? data_stats : data_repo,
-    ];
+    return req?.query?.includes("totalCommitContributions")
+      ? data_stats
+      : data_repo;
   });
 });
 
@@ -159,10 +152,8 @@ describe("Test fetchStats", () => {
   it("should stop fetching when there are repos with zero stars", async () => {
     mock.reset();
     mock
-      .onPost("https://api.github.com/graphql")
-      .replyOnce(200, data_stats)
-      .onPost("https://api.github.com/graphql")
-      .replyOnce(200, data_repo_zero_stars);
+      .onPostOnce("https://api.github.com/graphql", data_stats)
+      .onPostOnce("https://api.github.com/graphql", data_repo_zero_stars);
 
     let stats = await fetchStats("anuraghazra");
     const rank = calculateRank({
@@ -194,7 +185,7 @@ describe("Test fetchStats", () => {
 
   it("should throw error", async () => {
     mock.reset();
-    mock.onPost("https://api.github.com/graphql").reply(200, error);
+    mock.onPost("https://api.github.com/graphql", error);
 
     await expect(fetchStats("anuraghazra")).rejects.toThrow(
       "Could not resolve to a User with the login of 'noname'.",
@@ -202,9 +193,9 @@ describe("Test fetchStats", () => {
   });
 
   it("should fetch total commits", async () => {
-    mock
-      .onGet("https://api.github.com/search/commits?q=author:anuraghazra")
-      .reply(200, { total_count: 1000 });
+    mock.onGet("https://api.github.com/search/commits?q=author:anuraghazra", {
+      total_count: 1000,
+    });
 
     let stats = await fetchStats("anuraghazra", true);
     const rank = calculateRank({
@@ -241,9 +232,9 @@ describe("Test fetchStats", () => {
   });
 
   it("should throw specific error when include_all_commits true and API returns error", async () => {
-    mock
-      .onGet("https://api.github.com/search/commits?q=author:anuraghazra")
-      .reply(200, { error: "Some test error message" });
+    mock.onGet("https://api.github.com/search/commits?q=author:anuraghazra", {
+      error: "Some test error message",
+    });
 
     await expect(fetchStats("anuraghazra", true)).rejects.toThrow(
       "Could not fetch total commits.",
@@ -251,9 +242,9 @@ describe("Test fetchStats", () => {
   });
 
   it("should exclude stars of the `test-repo-1` repository", async () => {
-    mock
-      .onGet("https://api.github.com/search/commits?q=author:anuraghazra")
-      .reply(200, { total_count: 1000 });
+    mock.onGet("https://api.github.com/search/commits?q=author:anuraghazra", {
+      total_count: 1000,
+    });
 
     let stats = await fetchStats("anuraghazra", true, ["test-repo-1"]);
     const rank = calculateRank({
@@ -474,9 +465,7 @@ describe("Test fetchStats", () => {
 
   it("should return correct data when user don't have any pull requests", async () => {
     mock.reset();
-    mock
-      .onPost("https://api.github.com/graphql")
-      .reply(200, data_without_pull_requests);
+    mock.onPost("https://api.github.com/graphql", data_without_pull_requests);
     const stats = await fetchStats("anuraghazra", false, [], true);
     const rank = calculateRank({
       all_commits: false,
